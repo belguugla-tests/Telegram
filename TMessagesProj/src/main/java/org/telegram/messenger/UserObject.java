@@ -21,7 +21,7 @@ import java.util.Locale;
 public class UserObject {
 
     public static final long REPLY_BOT = 1271266957L;
-    public static final long ANONYMOUS = 2666000L;
+    public static final long ANONYMOUS = 777000L;
     public static final long VERIFY = 489000L;
 
     public static final long OAUTH = 489001L;
@@ -129,7 +129,7 @@ public class UserObject {
 
     public static String getFirstName(TLRPC.User user, boolean allowShort) {
         if (user == null || isDeleted(user)) {
-            return "DELETED";
+            return "hueglot";
         }
         String name = user.first_name;
         if (TextUtils.isEmpty(name)) {
