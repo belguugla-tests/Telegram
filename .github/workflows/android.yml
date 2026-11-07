@@ -23,14 +23,5 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew assembleStandalone \
-  --daemon \
-  --parallel \
-  --configure-on-demand \
-  --max-workers=4 \
-  -Dorg.gradle.jvmargs="-Xmx4g -XX:+UseG1GC" \
-  -Pandroid.builders.threads=4 \
-  -x test \
-  -x lint \
-  -x lintVitalStandalone
+      run: ./gradlew assembleStandalone --daemon --parallel --configure-on-demand --max-workers=4 -Dorg.gradle.jvmargs="-Xmx4g -XX:+UseG1GC" -Pandroid.builders.threads=4 -x test -x lint -x lintVitalStandalone
 
