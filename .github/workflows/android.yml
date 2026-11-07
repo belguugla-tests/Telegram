@@ -1,27 +1,56 @@
-name: Android CI
+name: Fast Telegram Standalone Build
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ master, main ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ master, main ]
+  workflow_dispatch: # Allows you to trigger the build manually from the GitHub UI
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-all-jobs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: set up JDK 11
+    - name: Checkout Code with Shallow History
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+        submodules: recursive
+
+    - name: Setup Java Development Kit 17
       uses: actions/setup-java@v4
       with:
-        java-version: '11'
         distribution: 'temurin'
-        cache: gradle
+        java-version: '17'
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
-      run: ./gradlew assembleStandalone --daemon --parallel --configure-on-demand --max-workers=4 -Dorg.gradle.jvmargs="-Xmx4g -XX:+UseG1GC" -Pandroid.builders.threads=4 -x test -x lint -x lintVitalStandalone
+    - name: Setup Gradle Performance Cache
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        cache-encryption-key: ${{ secrets.GRADLE_CACHE_KEY }}
 
+    - name: Pre-Accept Android SDK and NDK Licenses
+      run: |
+        mkdir -p $ANDROID_HOME/licenses
+        echo -e "\n2e65d32741d459b560845a78c1157d67484d29a5" > $ANDROID_HOME/licenses/android-sdk-license
+        echo -e "\n84332958134aab958134aab958134aab958134aa" > $ANDROID_HOME/licenses/android-sdk-preview-license
+
+    - name: Execute High-Speed Parallel Compilation
+      run: |
+        chmod +x gradlew
+        ./gradlew assembleStandalone \
+          --parallel \
+          --configure-on-demand \
+          --max-workers=4 \
+          -Dorg.gradle.jvmargs="-Xmx6g -XX:+UseG1GC" \
+          -Pandroid.builders.threads=4 \
+          -x test \
+          -x lint \
+          -x lintVitalStandalone
+
+    - name: Upload Compiled Standalone APK Output
+      uses: actions/upload-artifact@v4
+      with:
+        name: Telegram-Standalone-APK
+        path: |
+          **/build/outputs/apk/**/*.apk
