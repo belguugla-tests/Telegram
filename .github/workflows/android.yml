@@ -5,11 +5,11 @@ on:
     branches: [ master, main ]
   pull_request:
     branches: [ master, main ]
-  workflow_dispatch: # Allows you to trigger the build manually from the GitHub UI
+  workflow_dispatch: 
 
 jobs:
   build:
-    runs-all-jobs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Code with Shallow History
@@ -26,14 +26,6 @@ jobs:
 
     - name: Setup Gradle Performance Cache
       uses: gradle/actions/setup-gradle@v4
-      with:
-        cache-encryption-key: ${{ secrets.GRADLE_CACHE_KEY }}
-
-    - name: Pre-Accept Android SDK and NDK Licenses
-      run: |
-        mkdir -p $ANDROID_HOME/licenses
-        echo -e "\n2e65d32741d459b560845a78c1157d67484d29a5" > $ANDROID_HOME/licenses/android-sdk-license
-        echo -e "\n84332958134aab958134aab958134aab958134aa" > $ANDROID_HOME/licenses/android-sdk-preview-license
 
     - name: Execute High-Speed Parallel Compilation
       run: |
@@ -43,7 +35,7 @@ jobs:
           --configure-on-demand \
           --max-workers=4 \
           -Dorg.gradle.jvmargs="-Xmx6g -XX:+UseG1GC" \
-          -Pandroid.builders.threads=2 \
+          -Pandroid.builders.threads=4 \
           -x test \
           -x lint \
           -x lintVitalStandalone
