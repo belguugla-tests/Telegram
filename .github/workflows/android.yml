@@ -43,7 +43,7 @@ jobs:
           --configure-on-demand \
           --max-workers=4 \
           -Dorg.gradle.jvmargs="-Xmx6g -XX:+UseG1GC" \
-          -Pandroid.builders.threads=4 \
+          -Pandroid.builders.threads=2 \
           -x test \
           -x lint \
           -x lintVitalStandalone
